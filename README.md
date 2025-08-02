@@ -1,9 +1,9 @@
 # Broken Phone
 
-A web-based game inspired by Gartic Phone, supporting English and Armenian. Players create questions, pass the device to answer them, and see a combined story at the end.
+A web-based game inspired by my childhood game Broken Phone (Փչացած հեռախոս in Armenian), supporting English and Armenian. Players create questions, pass the device to answer them, and see a combined story at the end.
 
 ## Live Demo
-Play the game at [https://Broken-Phone-game](https://Iamnerses.github.io/Broken-Phone-game).
+Play the game [here](https://iamnerses.github.io/Broken-Phone-game/).
 
 ## How to Play
 1. Visit the live demo or run locally (see below).
@@ -48,5 +48,6 @@ To run the game locally, you need a web server due to CORS restrictions when loa
 
 ## License
 MIT License (see `LICENSE` file, if included).
+
 
 
