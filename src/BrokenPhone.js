@@ -7,11 +7,29 @@ let currentLanguage = 'en';
 async function loadTranslations() {
     try {
         const response = await fetch('translations.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
         translations = await response.json();
+        initializeDefaultPreset();
         updateLanguage(currentLanguage);
     } catch (error) {
         console.error('Error loading translations:', error);
+        alert('Failed to load translations. Please try refreshing the page.');
     }
+}
+
+function initializeDefaultPreset() {
+    const presets = JSON.parse(localStorage.getItem('presets') || '{}');
+    // Initialize default preset for each language if not already present
+    ['en', 'hy'].forEach(lang => {
+        const presetName = `${lang}_${translations[lang].default_preset_name}`;
+        if (!presets[presetName]) {
+            presets[presetName] = translations[lang].default_questions;
+        }
+    });
+    localStorage.setItem('presets', JSON.stringify(presets));
+    updatePresetDropdown();
 }
 
 function updateLanguage(lang) {
@@ -35,6 +53,33 @@ function updateLanguage(lang) {
     document.getElementById('submit-answer-btn').textContent = translations[lang].submit_answer_btn;
     document.getElementById('result-title').textContent = translations[lang].result_title;
     document.getElementById('restart-game-btn').textContent = translations[lang].restart_game_btn;
+
+    // remove remains  
+  document.getElementById('preset-name').value = "";
+  clearQuestionList();
+  console.log("upd");  
+
+    // Update preset dropdown and translate loaded preset questions
+    updatePresetDropdown();
+    const currentPresetName = document.getElementById('preset-name').value.trim();
+    if (currentPresetName) {
+        const translatedPresetName = translatePresetName(currentPresetName, lang);
+        document.getElementById('preset-name').value = translatedPresetName;
+        loadPreset(translatedPresetName);
+    }
+}
+
+function translatePresetName(presetName, targetLang) {
+    // If preset is the default preset, return the translated name
+    const defaultPresetEn = `en_${translations.en.default_preset_name}`;
+    const defaultPresetHy = `hy_${translations.hy.default_preset_name}`;
+    if (presetName === defaultPresetEn && targetLang === 'hy') {
+        return defaultPresetHy;
+    } else if (presetName === defaultPresetHy && targetLang === 'en') {
+        return defaultPresetEn;
+    }
+    // For non-default presets, keep the name as is
+    return presetName.replace(/^en_|^hy_/, `${targetLang}_`);
 }
 
 function addQuestion(question = '') {
@@ -54,12 +99,22 @@ function removeQuestion(button) {
     }
 }
 
+function clearQuestionList() {
+    document.getElementById('question-list').innerHTML = `
+        <div class="flex items-center space-x-2">
+            <input type="text" class="question-input w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="${translations[currentLanguage].question_placeholder}">
+            <button onclick="removeQuestion(this)" class="text-red-500 hover:text-red-700">✕</button>
+        </div>
+    `;
+}
+
 function savePreset() {
-    const presetName = document.getElementById('preset-name').value.trim();
-    if (!presetName) {
+    const presetNameInput = document.getElementById('preset-name').value.trim();
+    if (!presetNameInput) {
         alert(translations[currentLanguage].no_preset_name_alert);
         return;
     }
+    const presetName = `${currentLanguage}_${presetNameInput}`;
     const questions = Array.from(document.querySelectorAll('.question-input'))
         .map(input => input.value.trim())
         .filter(value => value !== '');
@@ -79,10 +134,13 @@ function updatePresetDropdown() {
     const presets = JSON.parse(localStorage.getItem('presets') || '{}');
     dropdown.innerHTML = `<option value="">${translations[currentLanguage].load_preset_option}</option>`;
     for (const presetName in presets) {
-        const option = document.createElement('option');
-        option.value = presetName;
-        option.textContent = presetName;
-        dropdown.appendChild(option);
+        if (presetName.startsWith(`${currentLanguage}_`)) {
+            const displayName = presetName.replace(`${currentLanguage}_`, '');
+            const option = document.createElement('option');
+            option.value = presetName;
+            option.textContent = displayName;
+            dropdown.appendChild(option);
+        }
     }
 }
 
@@ -92,7 +150,7 @@ function loadPreset(presetName) {
     const questions = presets[presetName] || [];
     document.getElementById('question-list').innerHTML = '';
     questions.forEach(question => addQuestion(question));
-    document.getElementById('preset-name').value = presetName;
+    document.getElementById('preset-name').value = presetName.replace(`${currentLanguage}_`, '');
 }
 
 function startGame() {

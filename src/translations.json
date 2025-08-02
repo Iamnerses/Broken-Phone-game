@@ -1,7 +1,7 @@
 {
     "en": {
-        "page_title": "Pass the Story",
-        "setup_title": "Pass the Story",
+        "page_title": "Broken Phone",
+        "setup_title": "Broken Phone",
         "setup_description": "Add questions for players to answer. Each answer will be combined into a final story! You can also select a saved preset.",
         "preset_name_label": "Preset Name (Optional):",
         "preset_name_placeholder": "Enter preset name",
@@ -19,7 +19,17 @@
         "no_preset_name_alert": "Please enter a preset name!",
         "no_questions_alert": "Please add at least one question!",
         "preset_saved_alert": "Preset saved!",
-        "no_answer_alert": "Please provide an answer!"
+        "no_answer_alert": "Please provide an answer!",
+        "default_preset_name": "Classic (who, w whom, where)",
+        "default_questions": [
+            "Who?",
+            "With whom?",
+            "Where?",
+            "When?",
+            "What were they doing?",
+            "Then who came?",
+            "What happened?"
+        ]
     },
     "hy": {
         "page_title": "Փչացած հեռախոս",
@@ -41,6 +51,16 @@
         "no_preset_name_alert": "Անունը մոռացաք հարցաշարի!!",
         "no_questions_alert": "Այ ցավդ, տանեմ հարց չես գրել ախր",
         "preset_saved_alert": "Պահպանվեց",
-        "no_answer_alert": "Լավ էէ միքիչ կրեատիվ էղի, նորմալ պատասխան գրի"
+        "no_answer_alert": "Լավ էէ միքիչ կրեատիվ էղի, նորմալ պատասխան գրի",
+        "default_preset_name": "Դասական (Ով, ում հետ, երբ)",
+        "default_questions": [
+            "Ո՞վ",
+            "Ու՞մ հետ",
+            "Որտե՞ղ",
+            "Ե՞րբ",
+            "Ի՞նչ էին անում",
+            "Հետո ո՞վ եկավ",
+            "Ի՞նչ պատահեց"
+        ]
     }
 }
