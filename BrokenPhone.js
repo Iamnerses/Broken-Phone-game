@@ -6,7 +6,7 @@ let currentLanguage = 'en';
 
 async function loadTranslations() {
     try {
-        const response = await fetch('src/translations.json');
+        const response = await fetch('translations.json');
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
