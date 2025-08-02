@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Pass the Story</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+    <div class="absolute top-4 right-4">
+        <select id="language-toggle" class="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="en">English</option>
+            <option value="hy">Հայերեն</option>
+        </select>
+    </div>
+
+    <div id="setup-screen" class="card w-full max-w-md p-6">
+        <h1 id="setup-title" class="text-3xl font-bold text-center mb-6 text-gray-800"></h1>
+        <p id="setup-description" class="text-gray-600 mb-4 text-center"></p>
+        <div class="mb-4">
+            <label for="preset-name" id="preset-name-label" class="block text-gray-700 mb-2"></label>
+            <input id="preset-name" type="text" class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="">
+        </div>
+        <div class="mb-4">
+            <label for="load-preset" id="load-preset-label" class="block text-gray-700 mb-2"></label>
+            <select id="load-preset" class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="loadPreset(this.value)">
+                <option value=""></option>
+            </select>
+        </div>
+        <div id="question-list" class="space-y-3 mb-6">
+            <div class="flex items-center space-x-2">
+                <input type="text" class="question-input w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="">
+                <button onclick="removeQuestion(this)" class="text-red-500 hover:text-red-700">✕</button>
+            </div>
+        </div>
+        <button onclick="addQuestion()" id="add-question-btn" class="btn bg-blue-500 text-white px-4 py-2 rounded-lg w-full mb-4"></button>
+        <button onclick="savePreset()" id="save-preset-btn" class="btn bg-purple-500 text-white px-4 py-2 rounded-lg w-full mb-4"></button>
+        <button onclick="startGame()" id="start-game-btn" class="btn bg-green-500 text-white px-4 py-2 rounded-lg w-full"></button>
+    </div>
+
+    <div id="game-screen" class="hidden card w-full max-w-md p-6">
+        <h1 id="game-title" class="text-3xl font-bold text-center mb-6 text-gray-800"></h1>
+        <p id="current-question" class="text-lg text-gray-700 mb-4 text-center"></p>
+        <input id="answer-input" type="text" class="w-full p-2 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="">
+        <button onclick="submitAnswer()" id="submit-answer-btn" class="btn bg-purple-500 text-white px-4 py-2 rounded-lg w-full mb-4"></button>
+    </div>
+
+    <div id="result-screen" class="hidden card w-full max-w-md p-6">
+        <h1 id="result-title" class="text-3xl font-bold text-center mb-6 text-gray-800"></h1>
+        <p id="final-story" class="text-lg text-gray-700 mb-6 text-center"></p>
+        <button onclick="restartGame()" id="restart-game-btn" class="btn bg-orange-500 text-white px-4 py-2 rounded-lg w-full"></button>
+    </div>
+
+    <script src="BrokenPhone.js"></script>
+</body>
+</html>
