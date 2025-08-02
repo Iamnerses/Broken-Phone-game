@@ -9,7 +9,7 @@ Play the game [here](https://iamnerses.github.io/Broken-Phone-game/).
 1. Visit the live demo or run locally (see below).
 2. Choose a language (English or Armenian) from the dropdown.
 3. Add questions, save them as a preset, or load a saved preset.
-4. Pass the device to answer each question.
+4. Answer the first question, submit and pass to next player.
 5. View the final story and play again!
 
 ## Running Locally
@@ -44,10 +44,10 @@ To run the game locally, you need a web server due to CORS restrictions when loa
 - Responsive design for mobile and desktop.
 - Supports English and Armenian languages via a JSON file.
 - Save and load question presets using localStorage.
-- Hosted seamlessly on GitHub Pages.
 
 ## License
 MIT License (see `LICENSE` file, if included).
+
 
 
 
