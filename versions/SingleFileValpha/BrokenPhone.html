@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Փչացած հեռախոս</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1);
+            background-size: 400%;
+            animation: gradient 15s ease infinite;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            transition: transform 0.2s, background-color 0.3s;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+    <div id="setup-screen" class="card w-full max-w-md p-6">
+        <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Փչացած հեռախոս</h1>
+        <p class="text-gray-600 mb-4 text-center">Ավելացրեք հարցեր, որ խաղացողները պատասխանեն։ Վերջում ստացված պատասխաններից կստեղծվի ամբողջական պատմություն։ Կարող եք ընտրել նաեւ պատրաստի հարցաշար</p>
+        <br>
+        <div class="mb-4">
+            <label for="preset-name" class="block text-gray-700 mb-2">Նոր հարցաշարի անվանում (ըստ ցանկության)</label>
+            <input id="preset-name" type="text" class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Թույն֊հարցաշարի֊անվանում777">
+        </div>
+        <div class="mb-4">
+            <label for="load-preset" class="block text-gray-700 mb-2">Բեռնել հարցաշար։</label>
+            <select id="load-preset" class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="loadPreset(this.value)">
+                <option value="">Ընտրել հարցաշար</option>
+            </select>
+        </div>
+        <div id="question-list" class="space-y-3 mb-6">
+            <div class="flex items-center space-x-2">
+              <input type="text" class="question-input w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Խոսքի ֊ Ո՞ր երկում">
+                <button onclick="removeQuestion(this)" class="text-red-500 hover:text-red-700">✕</button>
+            </div>
+        </div>
+        <button onclick="addQuestion()" class="btn bg-blue-500 text-white px-4 py-2 rounded-lg w-full mb-4">Ավելացնել եւս մեկ հարց</button>
+        <button onclick="savePreset()" class="btn bg-purple-500 text-white px-4 py-2 rounded-lg w-full mb-4">Պահպանել հարցաշարը</button>
+        <button onclick="startGame()" class="btn bg-green-500 text-white px-4 py-2 rounded-lg w-full">Սկսել խաղը</button>
+    </div>
+
+    <div id="game-screen" class="hidden card w-full max-w-md p-6">
+        <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Պատասխանիր հարցին </h1>
+        <p id="current-question" class="text-lg text-gray-700 mb-4 text-center"></p>
+        <input id="answer-input" type="text" class="w-full p-2 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Type your answer">
+        <button onclick="submitAnswer()" class="btn bg-purple-500 text-white px-4 py-2 rounded-lg w-full mb-4">Հաստատել եւ փոխանցել</button>
+    </div>
+
+    <div id="result-screen" class="hidden card w-full max-w-md p-6">
+        <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Հլը էս ինչ պատմություն են հնարել է</h1>
+        <p id="final-story" class="text-lg text-gray-700 mb-6 text-center"></p>
+        <button onclick="restartGame()" class="btn bg-orange-500 text-white px-4 py-2 rounded-lg w-full">Կրկին խաղալ</button>
+    </div>
+
+    <script>
+        let questions = [];
+        let answers = [];
+        let currentQuestionIndex = 0;
+
+        // Load saved presets on page load
+        window.onload = function() {
+            updatePresetDropdown();
+        };
+
+        function addQuestion(question = '') {
+            const questionList = document.getElementById('question-list');
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'flex items-center space-x-2';
+            questionDiv.innerHTML = `
+                <input type="text" class="question-input w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Խոսքի․․․ ուրիշ բան, էդ էլ դու մտածի" value="${question}">
+                <button onclick="removeQuestion(this)" class="text-red-500 hover:text-red-700">✕</button>
+            `;
+            questionList.appendChild(questionDiv);
+        }
+
+        function removeQuestion(button) {
+            if (document.querySelectorAll('.question-input').length > 1) {
+                button.parentElement.remove();
+            }
+        }
+
+        function savePreset() {
+            const presetName = document.getElementById('preset-name').value.trim();
+            if (!presetName) {
+                alert('Անունը մոռացաք հարցաշարի!!');
+                return;
+            }
+            const questions = Array.from(document.querySelectorAll('.question-input'))
+                .map(input => input.value.trim())
+                .filter(value => value !== '');
+            if (questions.length === 0) {
+                alert('Ավելացրեք առնվազն մեկ հարց, առանց հարց, ինչ հարցաշար՞');
+                return;
+            }
+            const presets = JSON.parse(localStorage.getItem('presets') || '{}');
+            presets[presetName] = questions;
+            localStorage.setItem('presets', JSON.stringify(presets));
+            updatePresetDropdown();
+            alert('Պահպանվեց');
+        }
+
+        function updatePresetDropdown() {
+            const dropdown = document.getElementById('load-preset');
+            const presets = JSON.parse(localStorage.getItem('presets') || '{}');
+            dropdown.innerHTML = '<option value="">Ընտրեք հարցաշար</option>';
+            for (const presetName in presets) {
+                const option = document.createElement('option');
+                option.value = presetName;
+                option.textContent = presetName;
+                dropdown.appendChild(option);
+            }
+        }
+
+        function loadPreset(presetName) {
+            if (!presetName) return;
+            const presets = JSON.parse(localStorage.getItem('presets') || '{}');
+            const questions = presets[presetName] || [];
+            document.getElementById('question-list').innerHTML = '';
+            questions.forEach(question => addQuestion(question));
+            document.getElementById('preset-name').value = presetName;
+        }
+
+        function startGame() {
+            questions = Array.from(document.querySelectorAll('.question-input'))
+                .map(input => input.value.trim())
+                .filter(value => value !== '');
+            if (questions.length === 0) {
+                alert('Այ ցավդ, տանեմ հարց չես գրել ախր');
+                return;
+            }
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            currentQuestionIndex = 0;
+            answers = [];
+            showQuestion();
+        }
+
+        function showQuestion() {
+            document.getElementById('current-question').textContent = questions[currentQuestionIndex];
+            document.getElementById('answer-input').value = '';
+        }
+
+        function submitAnswer() {
+            const answer = document.getElementById('answer-input').value.trim();
+            if (answer === '') {
+                alert('Լավ էէ միքիչ կրեատիվ էղի "    " ինչա, նորմալ պատասխան գրի ');
+                return;
+            }
+            answers.push(answer);
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            const story = answers.join(' ');
+            document.getElementById('final-story').textContent = story;
+        }
+
+        function restartGame() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('setup-screen').classList.remove('hidden');
+            questions = [];
+            answers = [];
+            currentQuestionIndex = 0;
+            document.getElementById('question-list').innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <input type="text" class="question-input w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Խոսքի․․․ ուրիշ բան, էդ էլ դու մտածի">
+                    <button onclick="removeQuestion(this)" class="text-red-500 hover:text-red-700">✕</button>
+                </div>
+            `;
+            document.getElementById('preset-name').value = '';
+            updatePresetDropdown();
+        }
+    </script>
+</body>
+</html>
